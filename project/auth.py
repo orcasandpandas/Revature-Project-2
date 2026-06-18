@@ -14,4 +14,3 @@ headers = {
 }
 
 
-print(response.text)

@@ -7,6 +7,7 @@ from fastapi.security import APIKeyHeader
 from starlette import status
 from typing import Optional
 from fastapi.responses import JSONResponse as _JSONResponse
+import HTTPException
 # Import our models
 from models import MovieResponse
 
@@ -37,6 +38,10 @@ async def get_movie(movie_id):
                 status_code=response.status_code, 
                 detail="Error fetching data from TMDB. Check the movie ID or API key."
             )
+    
+    data = response.json()
+
+    return data
 
 if __name__ == "__main__":
     import uvicorn
