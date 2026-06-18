@@ -1,13 +1,12 @@
 import httpx
 import logging
-from fastapi import FastAPI, Depends
+from fastapi import FastAPI, HTTPException
 from fastapi.requests import Request
 from fastapi.responses import JSONResponse, FileResponse
 from fastapi.security import APIKeyHeader
 from starlette import status
 from typing import Optional
 from fastapi.responses import JSONResponse as _JSONResponse
-import HTTPException
 # Import our models
 from models import MovieResponse
 
@@ -18,11 +17,18 @@ from models import MovieResponse
 TMDB_API_KEY = "034f84e71360ce56922495f811ae84d6"
 TMDB_BASE_URL = "https://api.themoviedb.org/3"
 
+
+
 app = FastAPI(
     title="Movies API",
     description="A simple API for managing movies.",
     version="1.0.0"
 )
+
+@app.get("/")
+def read_root():
+    return {"message": "Hello World"}
+
 
 @app.get("/movies/{movie_id}", response_model=MovieResponse)
 async def get_movie(movie_id):

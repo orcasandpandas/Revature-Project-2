@@ -3,6 +3,5 @@ from typing import Optional
 
 class MovieResponse(BaseModel):
     id: int
-    name: str
-    department: str
-    salary: int
+    title: str
+    release_date: str
