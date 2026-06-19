@@ -9,6 +9,8 @@ from fastapi.responses import JSONResponse as _JSONResponse
 # Import our models
 from models import Movie, MovieResponse
 from routers import router as movie_router
+from auth import router as auth_router
+
 
 
 
@@ -23,6 +25,7 @@ app = FastAPI(
 )
 
 app.include_router(movie_router)
+app.include_router(auth_router)
 
 @app.get("/")
 def read_root():
