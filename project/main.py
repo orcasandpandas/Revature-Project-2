@@ -8,7 +8,8 @@ from starlette import status
 from typing import Optional
 from fastapi.responses import JSONResponse as _JSONResponse
 # Import our models
-from models import MovieResponse
+from models import Movie, MovieResponse
+from routers import router as movie_router
 
 # API Key: 034f84e71360ce56922495f811ae84d6
 
@@ -27,12 +28,14 @@ app = FastAPI(
     version="1.0.0"
 )
 
+app.include_router(movie_router)
+
 @app.get("/")
 def read_root():
     return {"message": "Welcome to the Movies API!"}
 
-
-
+@app.get("/movies")
+def 
 
 
 if __name__ == "__main__":

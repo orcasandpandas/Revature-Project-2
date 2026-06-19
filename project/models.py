@@ -10,6 +10,7 @@ class Movie(BaseModel):
 class MovieResponse(BaseModel):
     page: int = 0
     results: list[Movie]
+    
 class MovieResponse(BaseModel):
     id: int
     title: str
