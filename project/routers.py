@@ -9,6 +9,8 @@ TMDB_API_KEY = "034f84e71360ce56922495f811ae84d6"
 TMDB_BASE_URL = "https://api.themoviedb.org/3"
 
 
+
+
 # Gets details of a movie
 @router.get("/movies", response_model=MovieResponse)
 async def get_movie(kw: str, year: int | None):
