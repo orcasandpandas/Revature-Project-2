@@ -34,9 +34,6 @@ app.include_router(movie_router)
 def read_root():
     return {"message": "Welcome to the Movies API!"}
 
-@app.get("/movies")
-def 
-
 
 if __name__ == "__main__":
     import uvicorn
