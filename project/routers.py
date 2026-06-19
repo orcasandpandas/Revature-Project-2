@@ -9,13 +9,13 @@ TMDB_API_KEY = "034f84e71360ce56922495f811ae84d6"
 TMDB_BASE_URL = "https://api.themoviedb.org/3"
 
 
-# Gets details of a movie
+# Gets movies matching a query
 @router.get("/movies", response_model=MovieResponse)
-async def get_movie(kw: str, year: int | None):
-    url = f"{TMDB_BASE_URL}/discover/movie"
+async def get_movie(kw: str, year: int | None = None):
+    url = f"{TMDB_BASE_URL}/search/movie"
 
     params = {"api_key": TMDB_API_KEY, 
-              "with_keywords": kw,}
+              "query": kw,}
     
     if year is not None:
          params["year"] = year
@@ -26,7 +26,7 @@ async def get_movie(kw: str, year: int | None):
     if response.status_code != 200:
             raise HTTPException(
                 status_code=response.status_code, 
-                detail="Error fetching data from TMDB. Check the movie ID or API key."
+                detail="Error fetching data from TMDB. Check the movie name or API key."
             )
     
     data = response.json()
@@ -35,7 +35,7 @@ async def get_movie(kw: str, year: int | None):
 
 # Gets Genres
 @router.get("/genres", response_model=GenreResponse)
-async def get_genres(list: int):
+async def get_genres():
 
     url = f"{TMDB_BASE_URL}/genre/movie/list"
     params = {"api_key": TMDB_API_KEY}
@@ -51,3 +51,4 @@ async def get_genres(list: int):
     
     data = response.json()
     
+    return data

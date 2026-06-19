@@ -10,11 +10,6 @@ class Movie(BaseModel):
 class MovieResponse(BaseModel):
     page: int = 0
     results: list[Movie]
-    
-class MovieResponse(BaseModel):
-    id: int
-    title: str
-    release_date: str
 
 class Genre(BaseModel):
     id: int = 0
