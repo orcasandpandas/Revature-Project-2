@@ -1,54 +1,64 @@
 from fastapi import APIRouter, HTTPException
 from models import *
-import httpx
 
 
 router = APIRouter()
 
-TMDB_API_KEY = "034f84e71360ce56922495f811ae84d6"
-TMDB_BASE_URL = "https://api.themoviedb.org/3"
+movies_db = [{
+        "id": 1,
+        "title": "The Lion King",
+        "genres": ["Adventure", "Animated", "Animals"],
+        "year": 1994,
+        "rating": 8.5
+    },
+    {
+        "id": 2,
+        "title": "Alien",
+        "genres": ["Sci-fi", "Horror", "Monster", "Aliens"],
+        "year": 1979,
+        "rating": 8.4
+    },
+    {
+        "id": 3,
+        "title": "Spirited Away",
+        "genres": ["Animated", "Adventure"],
+        "year": 2001,
+        "rating": 8.6
+    }
+]
+
+
+genres = {1 : "Animated", 2 : "Horror"}
 
 
 # Gets movies matching a query
 @router.get("/movies", response_model=MovieResponse)
-async def get_movie(kw: str, year: int | None = None):
-    url = f"{TMDB_BASE_URL}/search/movie"
+def get_movie(title: str, year: Optional[int] = None):
 
-    params = {"api_key": TMDB_API_KEY, 
-              "query": kw,}
-    
     if year is not None:
-         params["year"] = year
+        return {"results" : [m for m in movies_db if m["year"] == year and title.lower() in m["title"].lower()]}
+    return {"results" : [m for m in movies_db if title.lower() in m["title"].lower()]}
 
-    async with httpx.AsyncClient() as client:
-        response = await client.get(url, params=params)
-
-    if response.status_code != 200:
-            raise HTTPException(
-                status_code=response.status_code, 
-                detail="Error fetching data from TMDB. Check the movie name or API key."
-            )
     
-    data = response.json()
 
-    return data
+    raise HTTPException(status_code=404, detail=f"Movie with title {title} from year {year} not found")
 
-# Gets Genres
-@router.get("/genres", response_model=GenreResponse)
-async def get_genres():
 
-    url = f"{TMDB_BASE_URL}/genre/movie/list"
-    params = {"api_key": TMDB_API_KEY}
+# # Gets Genres
+# @router.get("/genres", response_model=GenreResponse)
+# async def get_genres():
 
-    async with httpx.AsyncClient() as client:
-        response = await client.get(url, params=params)
+#     params = {}
 
-    if response.status_code != 200:
-            raise HTTPException(
-                status_code=response.status_code, 
-                detail="Error fetching data from TMDB. Check the movie ID or API key."
-            )
+#     async with httpx.AsyncClient() as client:
+#         response = await client.get(url, params=params)
+
+#     if response.status_code != 200:
+#             raise HTTPException(
+#                 status_code=response.status_code, 
+#                 detail="Error fetching data from TMDB. Check the movie ID or API key."
+#             )
     
-    data = response.json()
+#     data = response.json()
     
-    return data
+#     return data
