@@ -50,12 +50,18 @@ def get_movie(title: str, year: Optional[int] = None, username: str = Depends(ge
 
 
 # Gets list from storage
-@router.get("/read-all", response_model=MovieResponse)
-async def read_all(username: str = Depends(get_user)):
+@router.get("/read-all", response_model=MovieResponse,
+            summary="Gets a list of all movies.  If specified, can also return a list of movies that are watch or unwatched.",
+            response_description="Either a list of all movies or a list of movies that are watched/unwatched.")
+async def read_all(watched: bool | None = None):
+    if watched is None:
+        return {"results": movies_db}
+    
+    filtered_movies = [m for m in movies_db if m.get("watched") == watched]
 
-    return {"results": movies_db}
+    return {"results": filtered_movies}
 
-# updates a movie detail for a movie in the list
+# Updates a movie detail for a movie in the list
 @router.patch("/update", response_model=Movie)
 async def update(id_number: int, key: str, new_value, username: str = Depends(get_user)):
     for movie in movies_db:
