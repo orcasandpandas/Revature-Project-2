@@ -6,35 +6,35 @@ import storage
 
 router = APIRouter()
 
-movies_db = [{"id": 1, "title": "The Lion King", "genres": ["Adventure", "Animated", "Animals"], "year": 1994, "rating": 8.5}, 
-             {"id": 2, "title": "Alien", "genres": ["Sci-fi", "Horror", "Monster", "Aliens"], "year": 1979, "rating": 8.4}, 
-             {"id": 3, "title": "Spirited Away", "genres": ["Animated", "Adventure"], "year": 2001, "rating": 8.6}]
+movies_db = [{"id": 1, "title": "The Lion King", "genres": ["Adventure", "Animated", "Animals"], "year": 1994, "rating": 8.5, "watched": False}, 
+             {"id": 2, "title": "Alien", "genres": ["Sci-fi", "Horror", "Monster", "Aliens"], "year": 1979, "rating": 8.4, "watched": False}, 
+             {"id": 3, "title": "Spirited Away", "genres": ["Animated", "Adventure"], "year": 2001, "rating": 8.6, "watched": False}]
 
 filepath = "movies.json"
 
 storage.write_data(filepath, movies_db)
 
-# Creates movie and puts it in storage. The template is not the same as the example database
-@router.post("/create", response_model=MovieResponse)
-async def create(title, genre, year: int, rating: int):
-    data = storage.read_data(filepath)
+movies_db = storage.read_data(filepath)
+
+# Creates movie and puts it in storage. 
+@router.post("/create", response_model=Movie)
+async def create(title, genre, year: int, rating: float):
     genres = genre.split()
     new_movie = {
-        "id": len(data) + 1,
+        "id": len(movies_db) + 1,
         "title": title,
         "genres": genres,
         "year": year,
         "rating": rating,
     }
-    data.append(new_movie)
-    storage.write_data(filepath, data)
+    movies_db.append(new_movie)
+    storage.write_data(filepath, movies_db)
     return new_movie
 
 # Gets movie from storage based on id
-@router.get("/read-one", response_model=MovieResponse)
+@router.get("/read-one", response_model=Movie)
 async def read_one(id_number: int):
-    data = storage.read_data(filepath)
-    for movie in data:
+    for movie in movies_db:
         if movie["id"] == id_number:
             return movie
         
@@ -54,42 +54,34 @@ def get_watch_status():
 # Gets list from storage
 @router.get("/read-all", response_model=MovieResponse)
 async def read_all(watched: bool | None = None):
-    data = storage.read_data(filepath)
     if watched is None:
-        return data
+        return {"results": movies_db}
     
-    filtered_movies = [m for m in data if m.get("watched") == watched]
+    filtered_movies = [m for m in movies_db if m.get("watched") == watched]
 
-    return filtered_movies
+    return {"results": filtered_movies}
 
 # updates a movie detail for a movie in the list
-@router.get("/update", response_model=MovieResponse)
+@router.patch("/update", response_model=Movie)
 async def update(id_number: int, key: str, new_value):
-    data = storage.read_data(filepath)
-    for movie in data:
+    for movie in movies_db:
         if movie["id"] == id_number:
             if key == "year" or key == "rating":
                 movie[key] = int(new_value)
             elif key == "id": # not allowed to change id number
                 break
+            elif key == "watched":
+                movie[key] = bool(new_value)
             else:
                 movie[key] = new_value
-
-    storage.write_data(filepath, data)
+            storage.write_data(filepath, movies_db)
+            return movie
 
 # removes a value from the list
-@router.get("/remove", response_model=MovieResponse)
+@router.delete("/remove", response_model=Movie)
 async def update(id_number: int):
-    data = storage.read_data(filepath)
-
-    for movie in data:
+    for movie in movies_db:
         if movie["id"] == id_number:
-            data.remove(movie)
-
-    storage.write_data(filepath, data)
-
-
-
-
-# @router.patch("/Update")
-# async def update()
+            movies_db.remove(movie)
+            storage.write_data(filepath, movies_db)
+            return movie
