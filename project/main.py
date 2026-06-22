@@ -1,5 +1,5 @@
 import logging
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Depends
 from fastapi.requests import Request
 from fastapi.responses import JSONResponse, FileResponse
 from fastapi.security import APIKeyHeader
@@ -9,7 +9,7 @@ from fastapi.responses import JSONResponse as _JSONResponse
 # Import our models
 from models import Movie, MovieResponse
 from routers import router as movie_router
-from auth import router as auth_router
+from auth import router as auth_router, get_user
 
 
 
@@ -28,7 +28,7 @@ app.include_router(movie_router)
 app.include_router(auth_router)
 
 @app.get("/")
-def read_root():
+def read_root(username: str = Depends(get_user)):
     return {"message": "Welcome to the Movies API!"}
 
 
