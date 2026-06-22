@@ -1,5 +1,7 @@
 from fastapi import APIRouter, HTTPException
 from models import *
+import httpx
+import storage
 
 
 router = APIRouter()
@@ -27,38 +29,36 @@ movies_db = [{
     }
 ]
 
+storage.write_data("movies.json", movies_db)
 
-genres = {1 : "Animated", 2 : "Horror"}
+# Creates movie and puts it in storage. The template is not the same as the example database
+@router.post("/Create")
+async def create(genre, title, release_date):
+    data = storage.read_data("movies.json")
+    new_movie = {
+        "id": len(data) + 1,
+        "genre": genre,
+        "title": title,
+        "release date": release_date
+    }
+    data.append(new_movie)
+    storage.write_data("movies.json", data)
 
+# Gets movie from storage based on id
+@router.get("/ReadOne")
+async def read_one(id_number: int):
+    data = storage.read_data("movies.json")
+    for movie in data:
+        print(type(movie))
+        if movie["id"] == id_number:
+            return movie
 
-# Gets movies matching a query
-@router.get("/movies", response_model=MovieResponse)
-def get_movie(title: str, year: Optional[int] = None):
+# Gets list from storage
+@router.get("/ReadAll")
+async def read_all():
+    data = storage.read_data("movies.json")
 
-    if year is not None:
-        return {"results" : [m for m in movies_db if m["year"] == year and title.lower() in m["title"].lower()]}
-    return {"results" : [m for m in movies_db if title.lower() in m["title"].lower()]}
+    return data
 
-    
-
-    raise HTTPException(status_code=404, detail=f"Movie with title {title} from year {year} not found")
-
-
-# # Gets Genres
-# @router.get("/genres", response_model=GenreResponse)
-# async def get_genres():
-
-#     params = {}
-
-#     async with httpx.AsyncClient() as client:
-#         response = await client.get(url, params=params)
-
-#     if response.status_code != 200:
-#             raise HTTPException(
-#                 status_code=response.status_code, 
-#                 detail="Error fetching data from TMDB. Check the movie ID or API key."
-#             )
-    
-#     data = response.json()
-    
-#     return data
+# @router.patch("/Update")
+# async def update()

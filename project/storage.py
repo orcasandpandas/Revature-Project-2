@@ -3,7 +3,7 @@ import json
 def read_data(filepath):
     try:
         f = open(filepath, "r")
-        data = f.read()
+        data = json.loads(f.read())
         f.close()
         return data
 
