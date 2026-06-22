@@ -6,8 +6,9 @@ import storage
 
 router = APIRouter()
 
-TMDB_API_KEY = "034f84e71360ce56922495f811ae84d6"
-TMDB_BASE_URL = "https://api.themoviedb.org/3"
+movies_db = [{"id": 1, "title": "The Lion King", "genres": ["Adventure", "Animated", "Animals"], "year": 1994, "rating": 8.5}, 
+             {"id": 2, "title": "Alien", "genres": ["Sci-fi", "Horror", "Monster", "Aliens"], "year": 1979, "rating": 8.4}, 
+             {"id": 3, "title": "Spirited Away", "genres": ["Animated", "Adventure"], "year": 2001, "rating": 8.6}]
 
 filepath = "movies.json"
 
@@ -53,7 +54,7 @@ async def read_all():
     return data
 
 # updates a movie detail for a movie in the list
-@router.get("/Update")
+@router.get("/update")
 async def update(id_number: int, key: str, new_value):
     data = storage.read_data(filepath)
     for movie in data:
@@ -68,7 +69,7 @@ async def update(id_number: int, key: str, new_value):
     storage.write_data(filepath, data)
 
 # removes a value from the list
-@router.get("/Remove")
+@router.get("/remove")
 async def update(id_number: int):
     data = storage.read_data(filepath)
 
