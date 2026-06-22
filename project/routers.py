@@ -1,5 +1,7 @@
 from fastapi import APIRouter, HTTPException
 from models import *
+import httpx
+import storage
 
 
 router = APIRouter()
@@ -7,35 +9,68 @@ router = APIRouter()
 TMDB_API_KEY = "034f84e71360ce56922495f811ae84d6"
 TMDB_BASE_URL = "https://api.themoviedb.org/3"
 
+filepath = "movies.json"
 
-# Gets details of a movie
-@router.get("/movies", response_model=MovieResponse)
-def get_movie(title: str, year: Optional[int] = None):
+storage.write_data(filepath, movies_db)
 
-    if year is not None:
-        return {"results" : [m for m in movies_db if m["year"] == year and title.lower() in m["title"].lower()]}
-    return {"results" : [m for m in movies_db if title.lower() in m["title"].lower()]}
+# Creates movie and puts it in storage. The template is not the same as the example database
+@router.post("/Create")
+async def create(title, genre, year: int, rating: int):
+    data = storage.read_data(filepath)
+    genres = genre.split()
+    new_movie = {
+        "id": len(data) + 1,
+        "title": title,
+        "genres": genres,
+        "year": year,
+        "rating": rating,
+    }
+    data.append(new_movie)
+    storage.write_data(filepath, data)
 
-    
+# Gets movie from storage based on id
+@router.get("/ReadOne")
+async def read_one(id_number: int):
+    data = storage.read_data(filepath)
+    for movie in data:
+        if movie["id"] == id_number:
+            return movie
 
-    raise HTTPException(status_code=404, detail=f"Movie with title {title} from year {year} not found")
+# Gets list from storage
+@router.get("/ReadAll")
+async def read_all():
+    data = storage.read_data(filepath)
+
+    return data
+
+# updates a movie detail for a movie in the list
+@router.get("/Update")
+async def update(id_number: int, key: str, new_value):
+    data = storage.read_data(filepath)
+    for movie in data:
+        if movie["id"] == id_number:
+            if key == "year" or key == "rating":
+                movie[key] = int(new_value)
+            elif key == "id": # not allowed to change id number
+                break
+            else:
+                movie[key] = new_value
+
+    storage.write_data(filepath, data)
+
+# removes a value from the list
+@router.get("/Remove")
+async def update(id_number: int):
+    data = storage.read_data(filepath)
+
+    for movie in data:
+        if movie["id"] == id_number:
+            data.remove(movie)
+
+    storage.write_data(filepath, data)
+
+        
 
 
-# # Gets Genres
-# @router.get("/genres", response_model=GenreResponse)
-# async def get_genres():
-
-#     params = {}
-
-#     async with httpx.AsyncClient() as client:
-#         response = await client.get(url, params=params)
-
-#     if response.status_code != 200:
-#             raise HTTPException(
-#                 status_code=response.status_code, 
-#                 detail="Error fetching data from TMDB. Check the movie ID or API key."
-#             )
-    
-#     data = response.json()
-    
-#     return data
+# @router.patch("/Update")
+# async def update()
