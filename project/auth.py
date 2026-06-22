@@ -8,12 +8,11 @@ router = APIRouter()
 security = HTTPBasic()
 
 USERS = {
-    "admin": "password123",
-    "user1": "mypassword"
+    "name": "pass1234"
 }
 
 def get_user(credentials: HTTPBasicCredentials = Depends(security)) -> str:
-    stored_password = USERS[credentials.username, ""]
+    stored_password = USERS.get(credentials.username, "")
     password_correct = secrets.compare_digest(
         credentials.password.encode('utf-8'), 
         stored_password.encode('utf-8')
@@ -22,7 +21,7 @@ def get_user(credentials: HTTPBasicCredentials = Depends(security)) -> str:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Incorrect username or password",
-            headers={"WWW-Authenticate": "Basic"},
+            headers={"WWW-Authenticate": "Basic"}
         )
     return credentials.username
 
