@@ -15,26 +15,27 @@ filepath = "movies.json"
 
 storage.write_data(filepath, movies_db)
 
+movies_db = storage.read_data(filepath)
+
 # Creates movie and puts it in storage. The template is not the same as the example database
-@router.post("/create")
-async def create(title, genre, year: int, rating: int):
-    data = storage.read_data(filepath)
+@router.post("/create", response_model=Movie)
+async def create(title, genre, year: int, rating: float):
     genres = genre.split()
     new_movie = {
-        "id": len(data) + 1,
+        "id": len(movies_db) + 1,
         "title": title,
         "genres": genres,
         "year": year,
         "rating": rating,
     }
-    data.append(new_movie)
-    storage.write_data(filepath, data)
+    movies_db.append(new_movie)
+    storage.write_data(filepath, movies_db)
+    return new_movie
 
 # Gets movie from storage based on id
-@router.get("/read-one")
+@router.get("/read-one", response_model=Movie)
 async def read_one(id_number: int):
-    data = storage.read_data(filepath)
-    for movie in data:
+    for movie in movies_db:
         if movie["id"] == id_number:
             return movie
         
@@ -48,17 +49,15 @@ def get_movie(title: str, year: Optional[int] = None):
 
 
 # Gets list from storage
-@router.get("/read-all")
+@router.get("/read-all", response_model=MovieResponse)
 async def read_all():
-    data = storage.read_data(filepath)
 
-    return data
+    return {"results": movies_db}
 
 # updates a movie detail for a movie in the list
-@router.get("/update")
+@router.patch("/update", response_model=Movie)
 async def update(id_number: int, key: str, new_value):
-    data = storage.read_data(filepath)
-    for movie in data:
+    for movie in movies_db:
         if movie["id"] == id_number:
             if key == "year" or key == "rating":
                 movie[key] = int(new_value)
@@ -66,22 +65,14 @@ async def update(id_number: int, key: str, new_value):
                 break
             else:
                 movie[key] = new_value
-
-    storage.write_data(filepath, data)
+            storage.write_data(filepath, movies_db)
+            return movie
 
 # removes a value from the list
-@router.get("/remove")
+@router.delete("/remove", response_model=Movie)
 async def update(id_number: int):
-    data = storage.read_data(filepath)
-
-    for movie in data:
+    for movie in movies_db:
         if movie["id"] == id_number:
-            data.remove(movie)
-
-    storage.write_data(filepath, data)
-
-        
-
-
-# @router.patch("/Update")
-# async def update()
+            movies_db.remove(movie)
+            storage.write_data(filepath, movies_db)
+            return movie
