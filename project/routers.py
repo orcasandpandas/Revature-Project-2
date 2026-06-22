@@ -35,12 +35,13 @@ storage.write_data(filepath, movies_db)
 
 # Creates movie and puts it in storage. The template is not the same as the example database
 @router.post("/Create")
-async def create(genre, title, year: int, rating: int):
+async def create(title, genre, year: int, rating: int):
     data = storage.read_data(filepath)
+    genres = genre.split()
     new_movie = {
         "id": len(data) + 1,
         "title": title,
-        "genres": genre,
+        "genres": genres,
         "year": year,
         "rating": rating,
     }
