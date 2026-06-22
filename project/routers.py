@@ -46,13 +46,21 @@ def get_movie(title: str, year: Optional[int] = None):
         return {"results" : [m for m in movies_db if m["year"] == year and title.lower() in m["title"].lower()]}
     return {"results" : [m for m in movies_db if title.lower() in m["title"].lower()]}
 
+@router.get("/watched-status", response_model=MovieResponse)
+def get_watch_status():
+    data = storage.read_data(filepath)
+
 
 # Gets list from storage
 @router.get("/read-all", response_model=MovieResponse)
-async def read_all():
+async def read_all(watched: bool | None = None):
     data = storage.read_data(filepath)
+    if watched is None:
+        return data
+    
+    filtered_movies = [m for m in data if m.get("watched") == watched]
 
-    return data
+    return filtered_movies
 
 # updates a movie detail for a movie in the list
 @router.get("/update", response_model=MovieResponse)
@@ -80,7 +88,7 @@ async def update(id_number: int):
 
     storage.write_data(filepath, data)
 
-        
+
 
 
 # @router.patch("/Update")
