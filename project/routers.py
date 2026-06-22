@@ -15,7 +15,7 @@ filepath = "movies.json"
 storage.write_data(filepath, movies_db)
 
 # Creates movie and puts it in storage. The template is not the same as the example database
-@router.post("/create")
+@router.post("/create", response_model=MovieResponse)
 async def create(title, genre, year: int, rating: int):
     data = storage.read_data(filepath)
     genres = genre.split()
@@ -28,9 +28,10 @@ async def create(title, genre, year: int, rating: int):
     }
     data.append(new_movie)
     storage.write_data(filepath, data)
+    return new_movie
 
 # Gets movie from storage based on id
-@router.get("/read-one")
+@router.get("/read-one", response_model=MovieResponse)
 async def read_one(id_number: int):
     data = storage.read_data(filepath)
     for movie in data:
@@ -47,14 +48,14 @@ def get_movie(title: str, year: Optional[int] = None):
 
 
 # Gets list from storage
-@router.get("/read-all")
+@router.get("/read-all", response_model=MovieResponse)
 async def read_all():
     data = storage.read_data(filepath)
 
     return data
 
 # updates a movie detail for a movie in the list
-@router.get("/update")
+@router.get("/update", response_model=MovieResponse)
 async def update(id_number: int, key: str, new_value):
     data = storage.read_data(filepath)
     for movie in data:
@@ -69,7 +70,7 @@ async def update(id_number: int, key: str, new_value):
     storage.write_data(filepath, data)
 
 # removes a value from the list
-@router.get("/remove")
+@router.get("/remove", response_model=MovieResponse)
 async def update(id_number: int):
     data = storage.read_data(filepath)
 
