@@ -32,27 +32,30 @@ async def create(title, genre, year: int, rating: float):
     return new_movie
 
 # Gets movie from storage based on id
-@router.get("/read-one", response_model=Movie)
+@router.get("/read-one", response_model=Movie,
+            summary="Retrieves a movie by id",
+            response_description="The movie and its details, otherwise throws an error"
+)   
 async def read_one(id_number: int):
     for movie in movies_db:
         if movie["id"] == id_number:
             return movie
         
 # Allows a movie to be searched by title and/or year
-@router.get("/movie-search", response_model=MovieResponse)
+@router.get("/movie-search", response_model=MovieResponse,
+            summary="Allows a movie to be searched for by title and year.  Year is optional.",
+            response_description="A list of movies matching the query")
 def get_movie(title: str, year: Optional[int] = None):
 
     if year is not None:
         return {"results" : [m for m in movies_db if m["year"] == year and title.lower() in m["title"].lower()]}
     return {"results" : [m for m in movies_db if title.lower() in m["title"].lower()]}
 
-@router.get("/watched-status", response_model=MovieResponse)
-def get_watch_status():
-    data = storage.read_data(filepath)
-
 
 # Gets list from storage
-@router.get("/read-all", response_model=MovieResponse)
+@router.get("/read-all", response_model=MovieResponse,
+            summary="Gets a list of all movies.  If specified, can also return a list of movies that are watch or unwatched.",
+            response_description="Either a list of all movies or a list of movies that are watched/unwatched.")
 async def read_all(watched: bool | None = None):
     if watched is None:
         return {"results": movies_db}
