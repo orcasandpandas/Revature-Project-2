@@ -7,13 +7,10 @@ class Movie(BaseModel):
     genres: list[str]
     year: int
     rating: float
+    watched: bool = False
 class MovieResponse(BaseModel):
     results: list[Movie]
 
-class Genre(BaseModel):
-    id: int = 0
-    name: str
-class GenreResponse(BaseModel):
-    genres: list[Genre]
+
     
 
