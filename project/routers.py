@@ -48,10 +48,6 @@ def get_movie(title: str, year: Optional[int] = None, username: str = Depends(ge
         return {"results" : [m for m in movies_db if m["year"] == year and title.lower() in m["title"].lower()]}
     return {"results" : [m for m in movies_db if title.lower() in m["title"].lower()]}
 
-@router.get("/watched-status", response_model=MovieResponse)
-def get_watch_status():
-    data = storage.read_data(filepath)
-
 
 # Gets list from storage
 @router.get("/read-all", response_model=MovieResponse)
