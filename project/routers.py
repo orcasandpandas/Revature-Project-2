@@ -1,3 +1,4 @@
+from auth import get_user
 from fastapi import APIRouter, HTTPException
 from models import *
 import httpx
