@@ -65,8 +65,10 @@ async def read_all(watched: bool | None = None):
 async def update(id_number: int, key: str, new_value, username: str = Depends(get_user)):
     for movie in movies_db:
         if movie["id"] == id_number:
-            if key == "year" or key == "rating":
+            if key == "year":
                 movie[key] = int(new_value)
+            elif key == "rating":
+                movie[key] = float(new_value)
             elif key == "id": # not allowed to change id number
                 break
             elif key == "watched":
