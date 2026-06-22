@@ -29,12 +29,14 @@ movies_db = [{
     }
 ]
 
-storage.write_data("movies.json", movies_db)
+filepath = "movies.json"
+
+storage.write_data(filepath, movies_db)
 
 # Creates movie and puts it in storage. The template is not the same as the example database
 @router.post("/Create")
-async def create(genre, title, year, rating):
-    data = storage.read_data("movies.json")
+async def create(genre, title, year: int, rating: int):
+    data = storage.read_data(filepath)
     new_movie = {
         "id": len(data) + 1,
         "title": title,
@@ -43,23 +45,51 @@ async def create(genre, title, year, rating):
         "rating": rating,
     }
     data.append(new_movie)
-    storage.write_data("movies.json", data)
+    storage.write_data(filepath, data)
 
 # Gets movie from storage based on id
 @router.get("/ReadOne")
 async def read_one(id_number: int):
-    data = storage.read_data("movies.json")
+    data = storage.read_data(filepath)
     for movie in data:
-        print(type(movie))
         if movie["id"] == id_number:
             return movie
 
 # Gets list from storage
 @router.get("/ReadAll")
 async def read_all():
-    data = storage.read_data("movies.json")
+    data = storage.read_data(filepath)
 
     return data
+
+# updates a movie detail for a movie in the list
+@router.get("/Update")
+async def update(id_number: int, key: str, new_value):
+    data = storage.read_data(filepath)
+    for movie in data:
+        if movie["id"] == id_number:
+            if key == "year" or key == "rating":
+                movie[key] = int(new_value)
+            elif key == "id": # not allowed to change id number
+                break
+            else:
+                movie[key] = new_value
+
+    storage.write_data(filepath, data)
+
+# removes a value from the list
+@router.get("/Remove")
+async def update(id_number: int):
+    data = storage.read_data(filepath)
+
+    for movie in data:
+        if movie["id"] == id_number:
+            data.remove(movie)
+
+    storage.write_data(filepath, data)
+
+        
+
 
 # @router.patch("/Update")
 # async def update()
