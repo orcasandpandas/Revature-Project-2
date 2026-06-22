@@ -55,7 +55,7 @@ async def read_all():
     return data
 
 # updates a movie detail for a movie in the list
-@router.get("/update", response_model=MovieResponse)
+@router.patch("/update", response_model=MovieResponse)
 async def update(id_number: int, key: str, new_value):
     data = storage.read_data(filepath)
     for movie in data:
@@ -66,22 +66,16 @@ async def update(id_number: int, key: str, new_value):
                 break
             else:
                 movie[key] = new_value
-
-    storage.write_data(filepath, data)
+            storage.write_data(filepath, data)
+            return movie
 
 # removes a value from the list
-@router.get("/remove", response_model=MovieResponse)
+@router.delete("/remove", response_model=MovieResponse)
 async def update(id_number: int):
     data = storage.read_data(filepath)
 
     for movie in data:
         if movie["id"] == id_number:
             data.remove(movie)
-
-    storage.write_data(filepath, data)
-
-        
-
-
-# @router.patch("/Update")
-# async def update()
+            storage.write_data(filepath, data)
+            return movie
