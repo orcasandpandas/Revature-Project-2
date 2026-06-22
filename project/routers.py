@@ -1,7 +1,6 @@
 from fastapi import APIRouter, HTTPException, Depends
 from auth import get_user
 from models import *
-import httpx
 import storage
 
 
