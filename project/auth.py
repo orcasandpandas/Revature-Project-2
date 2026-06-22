@@ -36,3 +36,5 @@ def get_profile(username: str = Depends(get_user)):
 @router.get("/users", tags=["Auth"])
 def get_profile(username: str = Depends(get_user)):
     return {"Users": [], "requested_by": username}
+
+
