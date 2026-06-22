@@ -33,13 +33,14 @@ storage.write_data("movies.json", movies_db)
 
 # Creates movie and puts it in storage. The template is not the same as the example database
 @router.post("/Create")
-async def create(genre, title, release_date):
+async def create(genre, title, year, rating):
     data = storage.read_data("movies.json")
     new_movie = {
         "id": len(data) + 1,
-        "genre": genre,
         "title": title,
-        "release date": release_date
+        "genres": genre,
+        "year": year,
+        "rating": rating,
     }
     data.append(new_movie)
     storage.write_data("movies.json", data)
