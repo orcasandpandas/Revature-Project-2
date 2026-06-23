@@ -8,7 +8,7 @@ router = APIRouter()
 security = HTTPBasic()
 
 USERS = {
-    "name": "pass1234"
+    "John": "pass1234"
 }
 
 def get_user(credentials: HTTPBasicCredentials = Depends(security)) -> str:
