@@ -78,7 +78,7 @@ async def read_all(watched: Optional[int] = Query(None, description="An optional
     description="Allows the following details of a movie to be updated: year, rating, and watched.")
 async def update(id_number: int = Query(..., description="The database id of the movie"), 
                  key: str = Query(..., description="The name of the parameter to be changed; can be year, rating, or watched"), 
-                 new_value = Query(..., description="The new value, must be int for year, float for rating and boolean for watched"), username: str = Depends(get_user)):
+                 new_value = Query(..., description="The new value; must be int for year, float for rating and boolean for watched"), username: str = Depends(get_user)):
     for movie in movies_db:
         if movie["id"] == id_number:
             if key == "year":
