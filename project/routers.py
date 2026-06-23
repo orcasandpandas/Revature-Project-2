@@ -16,7 +16,7 @@ storage.write_data(filepath, movies_db)
 
 movies_db = storage.read_data(filepath)
 
-# Creates movie and puts it in storage. The template is not the same as the example database
+# Creates movie and puts it in storage. 
 @router.post("/create", response_model=Movie,
     summary="Create a new movie entry",
     description="Adds a new movie to the database. The genre string will be split into a list of individual genres.",)
@@ -25,7 +25,7 @@ async def create(title, genre, year: int, rating: float, username: str = Depends
     new_movie = {
         "id": len(movies_db) + 1,
         "title": title,
-        "genres": genres,
+        "genres": genres (description="Input is a string with genres separated by a space"),
         "year": year,
         "rating": rating,
         "created_by": username
@@ -57,8 +57,8 @@ def get_movie(title: str, year: Optional[int] = None, username: str = Depends(ge
 
 # Gets list from storage
 @router.get("/read-all", response_model=MovieResponse,
-            summary="Gets a list of all movies.  If specified, can also return a list of movies that are watch or unwatched.",
-            response_description="Either a list of all movies or a list of movies that are watched/unwatched.")
+    summary="Gets a list of all movies.  If specified, can also return a list of movies that are watch or unwatched.",
+    response_description="Either a list of all movies or a list of movies that are watched/unwatched.")
 async def read_all(watched: bool | None = None):
     if watched is None:
         return {"results": movies_db}
