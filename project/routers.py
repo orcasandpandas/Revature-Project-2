@@ -7,9 +7,9 @@ import storage
 
 router = APIRouter()
 
-movies_db = [{"id": 1, "title": "The Lion King", "genres": ["Adventure", "Animated", "Animals"], "year": 1994, "rating": 8.5}, 
-             {"id": 2, "title": "Alien", "genres": ["Sci-fi", "Horror", "Monster", "Aliens"], "year": 1979, "rating": 8.4}, 
-             {"id": 3, "title": "Spirited Away", "genres": ["Animated", "Adventure"], "year": 2001, "rating": 8.6}]
+movies_db = [{"id": 1, "title": "The Lion King", "genres": ["Adventure", "Animated", "Animals"], "year": 1994, "rating": 8.5, "watched": False}, 
+             {"id": 2, "title": "Alien", "genres": ["Sci-fi", "Horror", "Monster", "Aliens"], "year": 1979, "rating": 8.4, "watched": False}, 
+             {"id": 3, "title": "Spirited Away", "genres": ["Animated", "Adventure"], "year": 2001, "rating": 8.6, "watched": False}]
 
 filepath = "movies.json"
 
@@ -48,6 +48,10 @@ def get_movie(title: str, year: Optional[int] = None, username: str = Depends(ge
         return {"results" : [m for m in movies_db if m["year"] == year and title.lower() in m["title"].lower()]}
     return {"results" : [m for m in movies_db if title.lower() in m["title"].lower()]}
 
+@router.get("/watched-status", response_model=MovieResponse)
+def get_watch_status():
+    data = storage.read_data(filepath)
+
 
 # Gets list from storage
 @router.get("/read-all", response_model=MovieResponse)
@@ -64,6 +68,8 @@ async def update(id_number: int, key: str, new_value, username: str = Depends(ge
                 movie[key] = int(new_value)
             elif key == "id": # not allowed to change id number
                 break
+            elif key == "watched":
+                movie[key] = bool(new_value)
             else:
                 movie[key] = new_value
             storage.write_data(filepath, movies_db)
