@@ -1,2 +1,2 @@
 # Revature-Project-2
-Revature Project 2 repo, with API calls.  This project works with the https://developer.themoviedb.org/reference/genre-movie-list API
+Revature Project 2 repo, with API calls.  The people who worked on this project were Victor Huang, Alex Demurve, and Araf Zaman
