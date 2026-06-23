@@ -15,17 +15,17 @@ movies_db = storage.read_data(filepath)
 @router.post("/create", response_model=Movie,
     tags=["Movies", "Create"],
     summary="Create a new movie entry",
-    description="Adds a new movie to the database. The genre string will be split into a list of individual genres.",)
-async def create(title: str = Query(..., description="The full title of the movie."),
-                 genre: str = Query(..., description="The genres of the movie, each separated by a space"), 
+    description="Adds a new movie to the database. The genre string will be split into a list of individual genres.")
+async def create(title : str = Query(..., description="The full title of the movie."),
+                 genre : str = Query(..., description="The genres of the movie, each separated by a space"), 
                  year: int = Query(..., description="The 4-digit release year (e.g., 2026)"), 
-                 rating: float = Query(..., descrption="The rating of the movie on a scale from 1 to 10."), 
+                 rating: float = Query(..., description="The rating of the movie on a scale from 1 to 10."), 
                  username: str = Depends(get_user)):
     genres = genre.split()
     new_movie = {
         "id": len(movies_db) + 1,
         "title": title,
-        "genres": genres (description="Input is a string with genres separated by a space"),
+        "genres": genres,
         "year": year,
         "rating": rating,
         "created_by": username
@@ -61,9 +61,9 @@ def get_movie(title: str = Query(..., description="The partial or full title of 
 # Gets list from storage
 @router.get("/read-all", response_model=MovieResponse,
     tags=["Movies", "Read"],
-    summary="Gets a list of all movies.  If specified, can also return a list of movies that are watch or unwatched.",
-    response_description="Either a list of all movies or a list of movies that are watched/unwatched.")
-async def read_all(watched: Optional[int] = Query(None, description="An optional parameter to get only watched movies (True) or unwatched (False).")):
+    summary="Gets a list of movies.",
+    description="Can get either a list of all movies or a list of movies that are watched/unwatched.")
+async def read_all(watched: Optional[int] = Query(None, description="An optional parameter to get only watched movies (by inputting 1) or unwatched (by inputting 0).")):
     if watched is None:
         return {"results": movies_db}
     
@@ -78,7 +78,7 @@ async def read_all(watched: Optional[int] = Query(None, description="An optional
     description="Allows the following details of a movie to be updated: year, rating, and watched.")
 async def update(id_number: int = Query(..., description="The database id of the movie"), 
                  key: str = Query(..., description="The name of the parameter to be changed; can be year, rating, or watched"), 
-                 new_value = Query(..., description="The new value; must be int for year, float for rating and boolean for watched"), username: str = Depends(get_user)):
+                 new_value = Query(..., description="The new value; must be int for year, float for rating and 1 or 0 for watched"), username: str = Depends(get_user)):
     for movie in movies_db:
         if movie["id"] == id_number:
             if key == "year":
