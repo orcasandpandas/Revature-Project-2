@@ -17,7 +17,9 @@ storage.write_data(filepath, movies_db)
 movies_db = storage.read_data(filepath)
 
 # Creates movie and puts it in storage. The template is not the same as the example database
-@router.post("/create", response_model=Movie)
+@router.post("/create", response_model=Movie,
+    summary="Create a new movie entry",
+    description="Adds a new movie to the database. The genre string will be split into a list of individual genres.",)
 async def create(title, genre, year: int, rating: float, username: str = Depends(get_user)):
     genres = genre.split()
     new_movie = {
@@ -33,14 +35,19 @@ async def create(title, genre, year: int, rating: float, username: str = Depends
     return new_movie
 
 # Gets movie from storage based on id
-@router.get("/read-one", response_model=Movie)
+@router.get("/read-one", response_model=Movie,
+    summary="Reads a movie by id",
+    description="Reads an individual movie directy though its id.")
+
 async def read_one(id_number: int, username: str = Depends(get_user)):
     for movie in movies_db:
         if movie["id"] == id_number:
             return movie
         
 # Allows a movie to be searched by title and/or year
-@router.get("/movie-search", response_model=MovieResponse)
+@router.get("/movie-search", response_model=MovieResponse,
+    summary="Allows a movie to be searched by title",
+    description="Queries for any  movies matching the inputted keywords; year is optional.")
 def get_movie(title: str, year: Optional[int] = None, username: str = Depends(get_user)):
 
     if year is not None:
@@ -61,7 +68,9 @@ async def read_all(watched: bool | None = None):
     return {"results": filtered_movies}
 
 # Updates a movie detail for a movie in the list
-@router.patch("/update", response_model=Movie)
+@router.patch("/update", response_model=Movie,
+    summary="Updates a specific movie's detail",
+    description="Allows the following details of a movie to be updated: year, rating, and watched.")
 async def update(id_number: int, key: str, new_value, username: str = Depends(get_user)):
     for movie in movies_db:
         if movie["id"] == id_number:
@@ -79,7 +88,9 @@ async def update(id_number: int, key: str, new_value, username: str = Depends(ge
             return movie
 
 # removes a value from the list
-@router.delete("/remove", response_model=Movie)
+@router.delete("/remove", response_model=Movie,
+    summary="Removes a movie from the database",
+    description="Allows a movie to be removed by id.")
 async def update(id_number: int, username: str = Depends(get_user)):
     for movie in movies_db:
         if movie["id"] == id_number:
