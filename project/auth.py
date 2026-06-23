@@ -25,13 +25,15 @@ def get_user(credentials: HTTPBasicCredentials = Depends(security)) -> str:
         )
     return credentials.username
 
-@router.get("/users/me", tags=["Auth"])
+@router.get("/users/me", tags=["Auth"],
+            description="Authenticates the current user.")
 def get_profile(username: str = Depends(get_user)):
     return {
         "username": username,
         "message": f"Hello {username}, you are authenticated."
     }
 
-@router.get("/users", tags=["Auth"])
+@router.get("/users", tags=["Auth"],
+            description="Gets a list of all users.")
 def get_profile(username: str = Depends(get_user)):
     return {"Users": [], "requested_by": username}
